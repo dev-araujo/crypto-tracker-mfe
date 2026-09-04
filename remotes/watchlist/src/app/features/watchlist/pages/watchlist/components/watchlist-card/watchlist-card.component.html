@@ -1,0 +1,33 @@
+<article class="card">
+  <header class="card__header">
+    <crypto-coin-identity
+      [name]="coin().name"
+      [symbol]="coin().symbol"
+      [iconUrl]="coin().iconUrl"
+      [rank]="coin().rank"
+    />
+
+    <button
+      type="button"
+      class="card__remove"
+      [attr.aria-label]="'Remover ' + coin().name + ' da watchlist'"
+      (click)="removed.emit(coin())"
+    >
+      <crypto-icon name="trash" [size]="15" />
+    </button>
+  </header>
+
+  <p class="card__price numeric">{{ coin().price | price: currencyCode() }}</p>
+
+  <div class="card__delta">
+    <crypto-delta-badge [value]="coin().changePercent" [period]="periodLabel()" />
+    <span class="card__volume numeric">Vol. {{ coin().volume24h | compactNumber }}</span>
+  </div>
+
+  <crypto-sparkline [points]="coin().sparkline" [trend]="coin().trend" />
+
+  <a class="card__link" [routerLink]="['/coins', coin().uuid]">
+    Ver análise
+    <crypto-icon name="arrow-right" [size]="14" />
+  </a>
+</article>

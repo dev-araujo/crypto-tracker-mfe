@@ -1,0 +1,28 @@
+<div class="summary">
+  <crypto-stat-tile
+    label="Ativos acompanhados"
+    [value]="totalLabel()"
+    hint="Salvos neste navegador"
+  />
+
+  <div class="summary__block">
+    <span class="summary__label">Variação média ({{ periodLabel() }})</span>
+    <crypto-delta-badge size="md" [value]="averageChange()" [period]="periodLabel()" />
+  </div>
+
+  @if (showPerformers() && bestPerformer(); as best) {
+    <div class="summary__block">
+      <span class="summary__label">Melhor desempenho</span>
+      <span class="summary__coin">{{ best.name }}</span>
+      <crypto-delta-badge [value]="best.changePercent" [period]="periodLabel()" />
+    </div>
+  }
+
+  @if (showPerformers() && worstPerformer(); as worst) {
+    <div class="summary__block">
+      <span class="summary__label">Pior desempenho</span>
+      <span class="summary__coin">{{ worst.name }}</span>
+      <crypto-delta-badge [value]="worst.changePercent" [period]="periodLabel()" />
+    </div>
+  }
+</div>

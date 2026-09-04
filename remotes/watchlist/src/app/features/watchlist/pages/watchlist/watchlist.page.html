@@ -1,0 +1,74 @@
+<header class="masthead">
+  <p class="masthead__eyebrow">Sua carteira de interesse</p>
+  <h1 class="masthead__title">Watchlist</h1>
+  <p class="masthead__subtitle">
+    Os ativos que você acompanha, com preço e variação sempre atualizados. A lista fica salva neste
+    navegador.
+  </p>
+</header>
+
+@if (isEmpty()) {
+  <crypto-empty-state
+    icon="star"
+    title="Sua watchlist está vazia"
+    description="Marque uma criptomoeda com a estrela no mercado para acompanhá-la por aqui."
+  >
+    <a class="action" routerLink="/market">
+      Explorar o mercado
+      <crypto-icon name="arrow-right" [size]="14" />
+    </a>
+  </crypto-empty-state>
+} @else if (hasFailed()) {
+  <crypto-empty-state
+    icon="alert"
+    tone="error"
+    title="Não foi possível atualizar sua watchlist"
+    description="Os ativos continuam salvos. Tente carregar os preços novamente."
+  >
+    <button type="button" class="action" (click)="onRetry()">Tentar novamente</button>
+  </crypto-empty-state>
+} @else {
+  <watchlist-summary
+    [showPerformers]="coins().length > 1"
+    [total]="coins().length"
+    [averageChange]="averageChange()"
+    [bestPerformer]="bestPerformer()"
+    [worstPerformer]="worstPerformer()"
+    [periodLabel]="periodLabel()"
+  />
+
+  <div class="toolbar">
+    <crypto-segmented-control
+      [options]="periodOptions"
+      [value]="selectedPeriod()"
+      (valueChange)="onPeriodChange($event)"
+      groupLabel="Período de variação"
+    />
+
+    <button type="button" class="toolbar__clear" (click)="onClearAll()">
+      <crypto-icon name="trash" [size]="14" />
+      Limpar watchlist
+    </button>
+  </div>
+
+  @if (isLoading()) {
+    <div class="grid">
+      @for (card of skeletonCards; track $index) {
+        <crypto-skeleton width="100%" height="15rem" radius="var(--radius-lg)" />
+      }
+    </div>
+  } @else {
+    <ul class="grid">
+      @for (coin of coins(); track coin.uuid) {
+        <li>
+          <watchlist-card
+            [coin]="coin"
+            [currencyCode]="currencyCode()"
+            [periodLabel]="periodLabel()"
+            (removed)="onRemove($event)"
+          />
+        </li>
+      }
+    </ul>
+  }
+}
