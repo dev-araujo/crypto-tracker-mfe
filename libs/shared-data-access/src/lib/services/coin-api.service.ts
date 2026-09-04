@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { CachePolicy, withCachePolicy } from '../cache/cache-policy.context';
@@ -33,7 +33,6 @@ export class CoinApiService {
     }
 
     return this.http.get<CoinListApiResponse>(this.endpoint('coins'), {
-      headers: this.headers(),
       context: withCachePolicy(policy),
       params,
     });
@@ -54,7 +53,6 @@ export class CoinApiService {
     );
 
     return this.http.get<CoinListApiResponse>(this.endpoint('coins'), {
-      headers: this.headers(),
       context: withCachePolicy(policy),
       params,
     });
@@ -69,7 +67,6 @@ export class CoinApiService {
       .set('timePeriod', query.timePeriod);
 
     return this.http.get<CoinDetailApiResponse>(this.endpoint(`coin/${query.uuid}`), {
-      headers: this.headers(),
       context: withCachePolicy(policy),
       params,
     });
@@ -84,14 +81,9 @@ export class CoinApiService {
       .set('timePeriod', query.timePeriod);
 
     return this.http.get<PriceHistoryApiResponse>(this.endpoint(`coin/${query.uuid}/history`), {
-      headers: this.headers(),
       context: withCachePolicy(policy),
       params,
     });
-  }
-
-  private headers(): HttpHeaders {
-    return new HttpHeaders({ 'x-access-token': this.config.accessToken });
   }
 
   private endpoint(path: string): string {

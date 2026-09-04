@@ -3,7 +3,6 @@ import { CoinApiService } from '../services/coin-api.service';
 
 export interface CryptoApiConfig {
   readonly baseUrl: string;
-  readonly accessToken: string;
 }
 
 export const CRYPTO_API_CONFIG = new InjectionToken<CryptoApiConfig>('CRYPTO_API_CONFIG');

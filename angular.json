@@ -106,7 +106,8 @@
           },
           "defaultConfiguration": "development",
           "options": {
-            "port": 4200
+            "port": 4200,
+            "proxyConfig": "proxy.conf.mjs"
           }
         }
       }
@@ -217,7 +218,8 @@
           },
           "defaultConfiguration": "development",
           "options": {
-            "port": 4201
+            "port": 4201,
+            "proxyConfig": "proxy.conf.mjs"
           }
         }
       }
@@ -328,7 +330,8 @@
           },
           "defaultConfiguration": "development",
           "options": {
-            "port": 4202
+            "port": 4202,
+            "proxyConfig": "proxy.conf.mjs"
           }
         }
       }
@@ -439,7 +442,8 @@
           },
           "defaultConfiguration": "development",
           "options": {
-            "port": 4203
+            "port": 4203,
+            "proxyConfig": "proxy.conf.mjs"
           }
         }
       }
