@@ -198,34 +198,69 @@ Certifique-se de que você tem o [Docker](https://www.docker.com/get-started) e 
 
 ## Deploy 🚢
 
-Cada microfrontend é publicado de forma independente. Na Vercel, crie um projeto por app usando a configuração correspondente:
+Está no ar: **https://crypto-mfe-shell.vercel.app**
 
-```bash
-vercel deploy --prod --local-config=deploy/vercel.market.json
-vercel deploy --prod --local-config=deploy/vercel.analytics.json
-vercel deploy --prod --local-config=deploy/vercel.watchlist.json
-vercel deploy --prod --local-config=deploy/vercel.shell.json
-```
+| Microfrontend | URL                                     |
+| ------------- | --------------------------------------- |
+| shell (host)  | https://crypto-mfe-shell.vercel.app     |
+| market        | https://crypto-mfe-market.vercel.app    |
+| analytics     | https://crypto-mfe-analytics.vercel.app |
+| watchlist     | https://crypto-mfe-watchlist.vercel.app |
 
-Publique os três remotes primeiro e informe as URLs públicas no `.env` antes de publicar o shell:
+Cada microfrontend é **um projeto Vercel separado**, publicado de forma independente a partir deste mesmo repositório. O que muda entre eles são as configurações de build do projeto:
+
+| Projeto                | Build Command                                                              | Output Directory         |
+| ---------------------- | -------------------------------------------------------------------------- | ------------------------ |
+| `crypto-mfe-market`    | `npm run generate:env && npm run build:market`                             | `dist/market/browser`    |
+| `crypto-mfe-analytics` | `npm run generate:env && npm run build:analytics`                          | `dist/analytics/browser` |
+| `crypto-mfe-watchlist` | `npm run generate:env && npm run build:watchlist`                          | `dist/watchlist/browser` |
+| `crypto-mfe-shell`     | `npm run generate:env && npm run generate:manifest && npm run build:shell` | `dist/shell/browser`     |
+
+> As configurações vivem **no projeto**, não em arquivos `vercel.json` por app. O `vercel.json` da raiz é compartilhado pelos quatro e carrega apenas o que é comum: o rewrite de SPA e os headers de CORS do `remoteEntry.json`. Um `--local-config` na linha de comando só afeta builds locais — o build remoto lê o `vercel.json` da raiz e ignoraria a configuração por app.
+
+### Variáveis de ambiente
+
+Nos três remotes e no shell:
 
 ```env
-MFE_MARKET_URL=https://market.seu-dominio.com
-MFE_ANALYTICS_URL=https://analytics.seu-dominio.com
-MFE_WATCHLIST_URL=https://watchlist.seu-dominio.com
+COINRANKING_API_KEY=...
+COINRANKING_BASE_URL=https://api.coinranking.com/v2
 ```
 
-O `prebuild` regenera o `federation.manifest.json` com esses valores.
+E, **apenas no shell**, as URLs públicas dos remotes:
+
+```env
+MFE_MARKET_URL=https://crypto-mfe-market.vercel.app
+MFE_ANALYTICS_URL=https://crypto-mfe-analytics.vercel.app
+MFE_WATCHLIST_URL=https://crypto-mfe-watchlist.vercel.app
+```
+
+O build do shell gera o `federation.manifest.json` a partir delas. Trocar a URL de um remote é só alterar a variável e republicar **o shell** — os remotes não precisam de rebuild.
+
+### Publicando
+
+Os remotes primeiro, o shell por último:
+
+```bash
+vercel deploy --prod --project crypto-mfe-market
+vercel deploy --prod --project crypto-mfe-analytics
+vercel deploy --prod --project crypto-mfe-watchlist
+vercel deploy --prod --project crypto-mfe-shell
+```
 
 ## Troubleshooting 🩺
 
-**Erros `404` de chunk ou `ngDevMode is not defined` no navegador durante o desenvolvimento.**
+**Erros `404` de chunk ou `ngDevMode is not defined` durante o desenvolvimento.**
 
 Acontece quando um build de produção roda com os dev servers no ar: os dois compartilham o cache de artefatos da federação em `.angular/cache`. Pare os servidores e reinicie:
 
 ```bash
 npm run clean && npm start
 ```
+
+**O mesmo erro em produção, logo após um deploy.**
+
+É cache do navegador. Se a URL de um microfrontend já serviu outra aplicação, o `index.html` antigo e o import map continuam em cache e se misturam com os chunks novos. Um recarregamento forçado (`Ctrl+Shift+R`) resolve.
 
 ---
 
