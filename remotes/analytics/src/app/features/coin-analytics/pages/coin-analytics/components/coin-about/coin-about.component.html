@@ -1,0 +1,6 @@
+@if (description().length > 0) {
+  <section class="about" aria-labelledby="about-title">
+    <h2 id="about-title" class="about__title">Sobre {{ coinName() }}</h2>
+    <div class="about__content" [innerHTML]="description()"></div>
+  </section>
+}

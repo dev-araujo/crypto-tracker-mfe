@@ -1,0 +1,87 @@
+<a class="back" routerLink="/market">
+  <crypto-icon name="arrow-left" [size]="15" />
+  Voltar ao mercado
+</a>
+
+@if (detailStatus() === 'error' && detail() === null) {
+  <crypto-empty-state
+    icon="alert"
+    tone="error"
+    title="Não foi possível carregar este ativo"
+    description="Verifique sua conexão ou tente novamente em instantes."
+  >
+    <button type="button" class="action" (click)="onRetry()">Tentar novamente</button>
+    <a class="action" routerLink="/market">Ir para o mercado</a>
+  </crypto-empty-state>
+} @else if (detail(); as coin) {
+  <article class="analysis">
+    <section class="analysis__summary">
+      <analytics-coin-summary
+        [coin]="coin"
+        [currencyCode]="currencyCode()"
+        [periodLabel]="periodLabel()"
+        [isWatched]="isWatched()"
+        (watchToggled)="onWatchToggled()"
+      />
+    </section>
+
+    <section class="chart-card" aria-labelledby="chart-title">
+      <header class="chart-card__header">
+        <div>
+          <h2 id="chart-title" class="chart-card__title">Histórico de preço</h2>
+          @if (rangeLabels(); as range) {
+            <p class="chart-card__range numeric">
+              Mínima {{ range.lowest }} · Máxima {{ range.highest }}
+            </p>
+          }
+        </div>
+
+        <crypto-segmented-control
+          [options]="periodOptions"
+          [value]="selectedPeriod()"
+          (valueChange)="onPeriodChange($event)"
+          groupLabel="Período do gráfico"
+        />
+      </header>
+
+      @if (hasChartFailed()) {
+        <crypto-empty-state
+          icon="alert"
+          tone="error"
+          title="Histórico indisponível"
+          description="Não conseguimos carregar a série de preços para este período."
+        >
+          <button type="button" class="action" (click)="onRetry()">Tentar novamente</button>
+        </crypto-empty-state>
+      } @else if (isChartLoading()) {
+        <crypto-skeleton width="100%" height="22.5rem" radius="var(--radius-md)" />
+      } @else {
+        <crypto-price-chart
+          [series]="series()"
+          [currencyCode]="currencyCode()"
+          [trend]="coin.trend"
+          [ariaLabel]="'Histórico de preço de ' + coin.name + ' em ' + periodLabel()"
+        />
+        <p class="chart-card__hint">
+          Use as setas do teclado para navegar pelos pontos do gráfico.
+        </p>
+      }
+    </section>
+
+    <div class="analysis__details">
+      <analytics-coin-metrics [coin]="coin" [currencyCode]="currencyCode()" />
+
+      <div class="analysis__aside">
+        <analytics-coin-about [coinName]="coin.name" [description]="coin.description" />
+        <analytics-coin-links [links]="coin.links" />
+      </div>
+    </div>
+  </article>
+} @else {
+  <div class="loading">
+    <crypto-skeleton width="14rem" height="2.5rem" />
+    <crypto-skeleton width="10rem" height="1.2rem" />
+    <crypto-skeleton width="100%" height="24rem" radius="var(--radius-lg)" />
+    <crypto-skeleton width="100%" height="12rem" radius="var(--radius-lg)" />
+  </div>
+}

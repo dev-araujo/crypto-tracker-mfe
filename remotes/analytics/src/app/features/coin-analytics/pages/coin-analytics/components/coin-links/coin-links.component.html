@@ -1,0 +1,17 @@
+@if (visibleLinks().length > 0) {
+  <section class="links" aria-labelledby="links-title">
+    <h2 id="links-title" class="links__title">Links oficiais</h2>
+
+    <ul class="links__grid">
+      @for (link of visibleLinks(); track link.url) {
+        <li>
+          <a class="links__item" [href]="link.url" target="_blank" rel="noopener noreferrer">
+            <crypto-icon [name]="link.icon" [size]="16" />
+            <span class="links__name">{{ link.name }}</span>
+            <crypto-icon class="links__external" name="external" [size]="12" />
+          </a>
+        </li>
+      }
+    </ul>
+  </section>
+}

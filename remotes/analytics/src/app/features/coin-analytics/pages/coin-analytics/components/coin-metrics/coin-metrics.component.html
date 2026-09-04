@@ -1,0 +1,33 @@
+<section class="metrics" aria-labelledby="metrics-title">
+  <h2 id="metrics-title" class="metrics__title">Indicadores</h2>
+
+  <div class="metrics__grid">
+    @for (metric of metrics(); track metric.label) {
+      <crypto-stat-tile [label]="metric.label" [value]="metric.value" [hint]="metric.hint" />
+    }
+  </div>
+
+  <div class="supply">
+    <div class="supply__heading">
+      <h3 class="supply__title">Oferta em circulação</h3>
+      <span class="supply__percentage numeric">{{ supply().percentage }}</span>
+    </div>
+
+    <crypto-progress-bar [ratio]="supply().ratio" barLabel="Percentual da oferta em circulação" />
+
+    <dl class="supply__figures">
+      <div>
+        <dt>Circulante</dt>
+        <dd class="numeric">{{ supply().circulating }}</dd>
+      </div>
+      <div>
+        <dt>Total</dt>
+        <dd class="numeric">{{ supply().total }}</dd>
+      </div>
+      <div>
+        <dt>Máxima</dt>
+        <dd class="numeric">{{ supply().max }}</dd>
+      </div>
+    </dl>
+  </div>
+</section>

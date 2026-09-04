@@ -1,0 +1,62 @@
+@use 'mixins' as *;
+
+.metrics {
+  @include surface-card;
+
+  padding: var(--space-6);
+}
+
+.metrics__title {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-regular);
+  margin-bottom: var(--space-5);
+}
+
+.metrics__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: var(--space-5) var(--space-4);
+}
+
+.supply {
+  margin-top: var(--space-6);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--color-border);
+}
+
+.supply__heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: var(--space-3);
+}
+
+.supply__title {
+  @include eyebrow;
+}
+
+.supply__percentage {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+}
+
+.supply__figures {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-6);
+  margin: var(--space-4) 0 0;
+}
+
+.supply__figures dt {
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--color-text-subtle);
+}
+
+.supply__figures dd {
+  margin: var(--space-1) 0 0;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+}

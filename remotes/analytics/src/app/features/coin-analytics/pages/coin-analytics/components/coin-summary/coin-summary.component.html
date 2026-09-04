@@ -1,0 +1,36 @@
+<div class="summary">
+  <div class="summary__identity">
+    <crypto-coin-identity
+      size="lg"
+      [name]="coin().name"
+      [symbol]="coin().symbol"
+      [iconUrl]="coin().iconUrl"
+      [rank]="coin().rank"
+    />
+
+    <div class="summary__actions">
+      <crypto-watch-toggle
+        [active]="isWatched()"
+        [coinName]="coin().name"
+        [showLabel]="true"
+        [size]="16"
+        (toggled)="watchToggled.emit()"
+      />
+
+      @if (coin().websiteUrl; as website) {
+        <a class="summary__site" [href]="website" target="_blank" rel="noopener noreferrer">
+          Site oficial
+          <crypto-icon name="external" [size]="12" />
+        </a>
+      }
+    </div>
+  </div>
+
+  <div class="summary__pricing">
+    <p class="summary__price numeric">{{ coin().price | price: currencyCode() }}</p>
+    <div class="summary__delta">
+      <crypto-delta-badge size="md" [value]="coin().changePercent" [period]="periodLabel()" />
+      <span class="summary__period">em {{ periodLabel() }}</span>
+    </div>
+  </div>
+</div>
