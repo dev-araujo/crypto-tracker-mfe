@@ -47,3 +47,6 @@ Thumbs.db
 remotes/*/src/environments/environment.ts
 remotes/*/src/environments/environment.development.ts
 .env
+
+# Vercel
+.vercel
