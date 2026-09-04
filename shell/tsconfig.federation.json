@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.app.json",
+  "files": [
+    "../libs/shared-data-access/src/public-api.ts",
+    "../libs/shared-utils/src/public-api.ts",
+    "../libs/shared-ui/src/public-api.ts",
+    "../libs/shared-state/src/public-api.ts"
+  ],
+  "include": ["src/**/*.d.ts"]
+}

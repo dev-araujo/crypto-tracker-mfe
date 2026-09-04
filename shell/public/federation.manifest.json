@@ -1,0 +1,5 @@
+{
+  "market": "http://localhost:4201/remoteEntry.json",
+  "analytics": "http://localhost:4202/remoteEntry.json",
+  "watchlist": "http://localhost:4203/remoteEntry.json"
+}
