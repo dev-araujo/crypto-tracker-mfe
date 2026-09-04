@@ -1,0 +1,66 @@
+<header class="header">
+  <div class="header__inner">
+    <a class="brand" routerLink="/market" aria-label="Cripto Angular, ir para o mercado">
+      <span class="brand__mark" aria-hidden="true">C</span>
+      <span class="brand__text">
+        <span class="brand__name">Cripto</span>
+        <span class="brand__suffix">Angular</span>
+      </span>
+    </a>
+
+    <nav class="nav" aria-label="Navegação principal">
+      <a
+        class="nav__link"
+        routerLink="/market"
+        routerLinkActive="nav__link--active"
+        (mouseenter)="onPrefetchRemote('market')"
+        (focus)="onPrefetchRemote('market')"
+      >
+        <crypto-icon name="chart" [size]="16" />
+        Mercado
+      </a>
+      <a
+        class="nav__link"
+        routerLink="/watchlist"
+        routerLinkActive="nav__link--active"
+        (mouseenter)="onPrefetchRemote('watchlist')"
+        (focus)="onPrefetchRemote('watchlist')"
+      >
+        <crypto-icon name="star" [size]="16" />
+        Watchlist
+        @if (watchlistCount() > 0) {
+          <span class="nav__badge numeric">{{ watchlistCount() }}</span>
+        }
+      </a>
+    </nav>
+
+    <div class="header__actions">
+      <crypto-search-field
+        class="header__search"
+        [value]="searchTerm()"
+        [shortcutHint]="searchShortcut"
+        placeholder="Buscar cripto…"
+        fieldLabel="Buscar criptomoeda"
+        (search)="onSearch($event)"
+      />
+
+      <label class="currency">
+        <span class="visually-hidden">Moeda de referência</span>
+        <select [value]="currencyCode()" (change)="onCurrencyChange($event)">
+          @for (currency of currencies; track currency.uuid) {
+            <option [value]="currency.code">{{ currency.sign }} {{ currency.code }}</option>
+          }
+        </select>
+      </label>
+
+      <button
+        type="button"
+        class="theme-toggle"
+        [attr.aria-label]="theme() === 'dark' ? 'Ativar tema claro' : 'Ativar tema escuro'"
+        (click)="onThemeToggle()"
+      >
+        <crypto-icon [name]="theme() === 'dark' ? 'sun' : 'moon'" [size]="16" />
+      </button>
+    </div>
+  </div>
+</header>
