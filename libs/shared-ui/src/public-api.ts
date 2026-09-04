@@ -1,4 +1,5 @@
 export * from './lib/components/coin-identity/coin-identity.component';
+export * from './lib/components/confirm-dialog/confirm-dialog.component';
 export * from './lib/components/delta-badge/delta-badge.component';
 export * from './lib/components/empty-state/empty-state.component';
 export * from './lib/components/icon/icon-paths.constant';

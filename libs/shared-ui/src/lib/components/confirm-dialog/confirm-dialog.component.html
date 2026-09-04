@@ -1,0 +1,29 @@
+<dialog
+  #dialog
+  class="dialog"
+  [attr.aria-labelledby]="titleId"
+  [attr.aria-describedby]="description().length > 0 ? descriptionId : null"
+  (cancel)="onCancel($event)"
+  (click)="onBackdropClick($event)"
+>
+  <div class="dialog__panel" [class.dialog__panel--danger]="tone() === 'danger'">
+    <h2 class="dialog__title" [id]="titleId">{{ title() }}</h2>
+
+    @if (description().length > 0) {
+      <p class="dialog__description" [id]="descriptionId">{{ description() }}</p>
+    }
+
+    <div class="dialog__actions">
+      <button type="button" class="dialog__button" (click)="dismissed.emit()">
+        {{ cancelLabel() }}
+      </button>
+      <button
+        type="button"
+        class="dialog__button dialog__button--confirm"
+        (click)="confirmed.emit()"
+      >
+        {{ confirmLabel() }}
+      </button>
+    </div>
+  </div>
+</dialog>
