@@ -1,0 +1,53 @@
+{
+  "name": "crypto-tracker-mfe",
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "generate:env": "node scripts/generate-env.mjs",
+    "prestart": "npm run generate:env && npm run generate:manifest",
+    "start": "concurrently -k -n shell,market,analytics,watchlist -c blue,green,magenta,yellow \"ng serve shell\" \"ng serve market\" \"ng serve analytics\" \"ng serve watchlist\"",
+    "start:shell": "ng serve shell",
+    "start:market": "ng serve market",
+    "start:analytics": "ng serve analytics",
+    "start:watchlist": "ng serve watchlist",
+    "prebuild": "npm run generate:env && npm run generate:manifest",
+    "build": "npm run build:shell && npm run build:market && npm run build:analytics && npm run build:watchlist",
+    "build:shell": "ng build shell",
+    "build:market": "ng build market",
+    "build:analytics": "ng build analytics",
+    "build:watchlist": "ng build watchlist",
+    "test": "ng test @crypto/shared-utils && ng test @crypto/shared-data-access && ng test @crypto/shared-state && ng test @crypto/shared-ui && ng test shell && ng test market && ng test analytics && ng test watchlist",
+    "format": "prettier --write .",
+    "test:libs": "ng test @crypto/shared-utils && ng test @crypto/shared-data-access && ng test @crypto/shared-state && ng test @crypto/shared-ui",
+    "generate:manifest": "node scripts/generate-manifest.mjs",
+    "start:docker": "concurrently -k -n shell,market,analytics,watchlist -c blue,green,magenta,yellow \"ng serve shell --host 0.0.0.0\" \"ng serve market --host 0.0.0.0\" \"ng serve analytics --host 0.0.0.0\" \"ng serve watchlist --host 0.0.0.0\"",
+    "clean": "rm -rf dist .angular/cache"
+  },
+  "private": true,
+  "packageManager": "npm@11.19.0",
+  "dependencies": {
+    "@angular-architects/native-federation": "^22.1.2",
+    "@angular/common": "^22.1.0",
+    "@angular/compiler": "^22.1.0",
+    "@angular/core": "^22.1.0",
+    "@angular/forms": "^22.1.0",
+    "@angular/platform-browser": "^22.1.0",
+    "@angular/router": "^22.1.0",
+    "es-module-shims": "^2.8.0",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0"
+  },
+  "devDependencies": {
+    "@angular/build": "^22.1.7",
+    "@angular/cli": "^22.1.7",
+    "@angular/compiler-cli": "^22.1.0",
+    "@softarc/native-federation-orchestrator": "^4.6.0",
+    "concurrently": "^10.0.5",
+    "dotenv": "^17.4.2",
+    "jsdom": "^28.0.0",
+    "ng-packagr": "^22.1.0",
+    "prettier": "^3.8.1",
+    "typescript": "~6.0.2",
+    "vitest": "^4.0.8"
+  }
+}

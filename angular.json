@@ -1,0 +1,552 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "cli": {
+    "packageManager": "npm"
+  },
+  "newProjectRoot": "projects",
+  "projects": {
+    "shell": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "shell",
+      "sourceRoot": "shell/src",
+      "prefix": "shell",
+      "architect": {
+        "build": {
+          "builder": "@angular-architects/native-federation:build",
+          "options": {
+            "cacheExternalArtifacts": true,
+            "tsConfig": "shell/tsconfig.federation.json"
+          },
+          "configurations": {
+            "production": {
+              "target": "shell:esbuild:production"
+            },
+            "development": {
+              "target": "shell:esbuild:development",
+              "dev": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-architects/native-federation:build",
+          "options": {
+            "target": "shell:serve-original:development",
+            "tsConfig": "shell/tsconfig.federation.json",
+            "rebuildDelay": 500,
+            "cacheExternalArtifacts": true,
+            "dev": true,
+            "devServer": true,
+            "port": 0
+          }
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "buildTarget": "shell:esbuild:development"
+          }
+        },
+        "esbuild": {
+          "builder": "@angular/build:application",
+          "options": {
+            "browser": "shell/src/main.ts",
+            "tsConfig": "shell/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "shell/public"
+              }
+            ],
+            "styles": ["shell/src/styles.scss"],
+            "polyfills": ["es-module-shims"],
+            "stylePreprocessorOptions": {
+              "includePaths": ["libs/shared-ui/src/lib/styles"]
+            }
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "900kB",
+                  "maximumError": "1.5MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "12kB",
+                  "maximumError": "20kB"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve-original": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "shell:esbuild:production"
+            },
+            "development": {
+              "buildTarget": "shell:esbuild:development"
+            }
+          },
+          "defaultConfiguration": "development",
+          "options": {
+            "port": 4200
+          }
+        }
+      }
+    },
+    "market": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "remotes/market",
+      "sourceRoot": "remotes/market/src",
+      "prefix": "market",
+      "architect": {
+        "build": {
+          "builder": "@angular-architects/native-federation:build",
+          "options": {
+            "cacheExternalArtifacts": true,
+            "tsConfig": "remotes/market/tsconfig.federation.json"
+          },
+          "configurations": {
+            "production": {
+              "target": "market:esbuild:production"
+            },
+            "development": {
+              "target": "market:esbuild:development",
+              "dev": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-architects/native-federation:build",
+          "options": {
+            "target": "market:serve-original:development",
+            "tsConfig": "remotes/market/tsconfig.federation.json",
+            "rebuildDelay": 500,
+            "cacheExternalArtifacts": true,
+            "dev": true,
+            "devServer": true,
+            "port": 0
+          }
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "buildTarget": "market:esbuild:development"
+          }
+        },
+        "esbuild": {
+          "builder": "@angular/build:application",
+          "options": {
+            "browser": "remotes/market/src/main.ts",
+            "tsConfig": "remotes/market/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "remotes/market/public"
+              }
+            ],
+            "styles": ["remotes/market/src/styles.scss"],
+            "polyfills": ["es-module-shims"],
+            "stylePreprocessorOptions": {
+              "includePaths": ["libs/shared-ui/src/lib/styles"]
+            }
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "900kB",
+                  "maximumError": "1.5MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "12kB",
+                  "maximumError": "20kB"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "fileReplacements": [
+                {
+                  "replace": "remotes/market/src/environments/environment.ts",
+                  "with": "remotes/market/src/environments/environment.development.ts"
+                }
+              ]
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve-original": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "market:esbuild:production"
+            },
+            "development": {
+              "buildTarget": "market:esbuild:development"
+            }
+          },
+          "defaultConfiguration": "development",
+          "options": {
+            "port": 4201
+          }
+        }
+      }
+    },
+    "analytics": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "remotes/analytics",
+      "sourceRoot": "remotes/analytics/src",
+      "prefix": "analytics",
+      "architect": {
+        "build": {
+          "builder": "@angular-architects/native-federation:build",
+          "options": {
+            "cacheExternalArtifacts": true,
+            "tsConfig": "remotes/analytics/tsconfig.federation.json"
+          },
+          "configurations": {
+            "production": {
+              "target": "analytics:esbuild:production"
+            },
+            "development": {
+              "target": "analytics:esbuild:development",
+              "dev": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-architects/native-federation:build",
+          "options": {
+            "target": "analytics:serve-original:development",
+            "tsConfig": "remotes/analytics/tsconfig.federation.json",
+            "rebuildDelay": 500,
+            "cacheExternalArtifacts": true,
+            "dev": true,
+            "devServer": true,
+            "port": 0
+          }
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "buildTarget": "analytics:esbuild:development"
+          }
+        },
+        "esbuild": {
+          "builder": "@angular/build:application",
+          "options": {
+            "browser": "remotes/analytics/src/main.ts",
+            "tsConfig": "remotes/analytics/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "remotes/analytics/public"
+              }
+            ],
+            "styles": ["remotes/analytics/src/styles.scss"],
+            "polyfills": ["es-module-shims"],
+            "stylePreprocessorOptions": {
+              "includePaths": ["libs/shared-ui/src/lib/styles"]
+            }
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "900kB",
+                  "maximumError": "1.5MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "12kB",
+                  "maximumError": "20kB"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "fileReplacements": [
+                {
+                  "replace": "remotes/analytics/src/environments/environment.ts",
+                  "with": "remotes/analytics/src/environments/environment.development.ts"
+                }
+              ]
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve-original": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "analytics:esbuild:production"
+            },
+            "development": {
+              "buildTarget": "analytics:esbuild:development"
+            }
+          },
+          "defaultConfiguration": "development",
+          "options": {
+            "port": 4202
+          }
+        }
+      }
+    },
+    "watchlist": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "remotes/watchlist",
+      "sourceRoot": "remotes/watchlist/src",
+      "prefix": "watchlist",
+      "architect": {
+        "build": {
+          "builder": "@angular-architects/native-federation:build",
+          "options": {
+            "cacheExternalArtifacts": true,
+            "tsConfig": "remotes/watchlist/tsconfig.federation.json"
+          },
+          "configurations": {
+            "production": {
+              "target": "watchlist:esbuild:production"
+            },
+            "development": {
+              "target": "watchlist:esbuild:development",
+              "dev": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-architects/native-federation:build",
+          "options": {
+            "target": "watchlist:serve-original:development",
+            "tsConfig": "remotes/watchlist/tsconfig.federation.json",
+            "rebuildDelay": 500,
+            "cacheExternalArtifacts": true,
+            "dev": true,
+            "devServer": true,
+            "port": 0
+          }
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "buildTarget": "watchlist:esbuild:development"
+          }
+        },
+        "esbuild": {
+          "builder": "@angular/build:application",
+          "options": {
+            "browser": "remotes/watchlist/src/main.ts",
+            "tsConfig": "remotes/watchlist/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "remotes/watchlist/public"
+              }
+            ],
+            "styles": ["remotes/watchlist/src/styles.scss"],
+            "polyfills": ["es-module-shims"],
+            "stylePreprocessorOptions": {
+              "includePaths": ["libs/shared-ui/src/lib/styles"]
+            }
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "900kB",
+                  "maximumError": "1.5MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "12kB",
+                  "maximumError": "20kB"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "fileReplacements": [
+                {
+                  "replace": "remotes/watchlist/src/environments/environment.ts",
+                  "with": "remotes/watchlist/src/environments/environment.development.ts"
+                }
+              ]
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve-original": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "watchlist:esbuild:production"
+            },
+            "development": {
+              "buildTarget": "watchlist:esbuild:development"
+            }
+          },
+          "defaultConfiguration": "development",
+          "options": {
+            "port": 4203
+          }
+        }
+      }
+    },
+    "@crypto/shared-ui": {
+      "projectType": "library",
+      "root": "libs/shared-ui",
+      "sourceRoot": "libs/shared-ui/src",
+      "prefix": "crypto",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "libs/shared-ui/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "libs/shared-ui/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "libs/shared-ui/tsconfig.spec.json"
+          }
+        }
+      }
+    },
+    "@crypto/shared-utils": {
+      "projectType": "library",
+      "root": "libs/shared-utils",
+      "sourceRoot": "libs/shared-utils/src",
+      "prefix": "crypto",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "libs/shared-utils/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "libs/shared-utils/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "libs/shared-utils/tsconfig.spec.json"
+          }
+        }
+      }
+    },
+    "@crypto/shared-state": {
+      "projectType": "library",
+      "root": "libs/shared-state",
+      "sourceRoot": "libs/shared-state/src",
+      "prefix": "crypto",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "libs/shared-state/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "libs/shared-state/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "libs/shared-state/tsconfig.spec.json"
+          }
+        }
+      }
+    },
+    "@crypto/shared-data-access": {
+      "projectType": "library",
+      "root": "libs/shared-data-access",
+      "sourceRoot": "libs/shared-data-access/src",
+      "prefix": "crypto",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "libs/shared-data-access/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "libs/shared-data-access/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "libs/shared-data-access/tsconfig.spec.json"
+          }
+        }
+      }
+    }
+  }
+}
