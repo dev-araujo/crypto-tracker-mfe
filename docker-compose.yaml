@@ -1,0 +1,32 @@
+services:
+  shell:
+    build: .
+    container_name: crypto-mfe-shell
+    command: sh -c "npm run generate:env && npm run generate:manifest && npx ng serve shell --host 0.0.0.0"
+    env_file: .env
+    ports:
+      - '4200:4200'
+
+  market:
+    build: .
+    container_name: crypto-mfe-market
+    command: sh -c "npm run generate:env && npx ng serve market --host 0.0.0.0"
+    env_file: .env
+    ports:
+      - '4201:4201'
+
+  analytics:
+    build: .
+    container_name: crypto-mfe-analytics
+    command: sh -c "npm run generate:env && npx ng serve analytics --host 0.0.0.0"
+    env_file: .env
+    ports:
+      - '4202:4202'
+
+  watchlist:
+    build: .
+    container_name: crypto-mfe-watchlist
+    command: sh -c "npm run generate:env && npx ng serve watchlist --host 0.0.0.0"
+    env_file: .env
+    ports:
+      - '4203:4203'
