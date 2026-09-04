@@ -1,0 +1,195 @@
+@use 'mixins' as *;
+
+.table-card {
+  @include surface-card;
+
+  overflow: hidden;
+}
+
+.table-card__scroll {
+  overflow-x: auto;
+}
+
+.table-card__action {
+  @include ghost-button;
+
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+}
+
+.coins {
+  min-width: 46rem;
+  font-size: var(--text-sm);
+}
+
+.coins th,
+.coins td {
+  text-align: right;
+}
+
+.coins .coins__rank,
+.coins .coins__identity {
+  text-align: left;
+}
+
+.coins thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  font-size: var(--text-2xs);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--color-text-subtle);
+  white-space: nowrap;
+}
+
+.coins__sort {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin-left: auto;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+}
+
+.coins__sort:hover {
+  color: var(--color-text);
+}
+
+.coins__sort crypto-icon {
+  opacity: 0;
+  transition: opacity var(--duration-fast) var(--ease-out);
+}
+
+.coins__sort:hover crypto-icon,
+.coins th:not([aria-sort='none']) .coins__sort crypto-icon {
+  opacity: 1;
+}
+
+.coins__row {
+  position: relative;
+  cursor: pointer;
+}
+
+.coins__row--skeleton {
+  cursor: default;
+}
+
+.coins__row td {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: middle;
+}
+
+.coins__row > td > crypto-skeleton {
+  margin-left: auto;
+}
+
+.coins__row > td.coins__rank > crypto-skeleton {
+  margin-left: 0;
+}
+
+.coins__row:last-child td {
+  border-bottom: none;
+}
+
+.coins__row:hover td,
+.coins__row:focus-within td {
+  background: var(--color-surface-hover);
+}
+
+.coins__row:hover,
+.coins__row:focus-within {
+  --identity-name-color: var(--color-accent);
+  --identity-name-decoration: underline;
+}
+
+.coins__rank {
+  width: 3rem;
+  color: var(--color-text-subtle);
+  font-size: var(--text-xs);
+}
+
+.coins__link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  border-radius: var(--radius-md);
+}
+
+.coins__link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+
+.coins__link-icon {
+  flex: none;
+  color: var(--color-text-subtle);
+  opacity: 0;
+  transition:
+    opacity var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out);
+}
+
+.coins__row:hover .coins__link-icon,
+.coins__row:focus-within .coins__link-icon {
+  opacity: 1;
+  color: var(--color-accent);
+}
+
+.coins__identity-skeleton {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.coins__price {
+  font-weight: var(--weight-medium);
+}
+
+.coins__trend {
+  width: 7rem;
+}
+
+.coins__watch {
+  width: 3rem;
+}
+
+.coins__row td.coins__watch {
+  position: relative;
+  z-index: 1;
+}
+
+.coins--stale {
+  opacity: 0.62;
+  transition: opacity var(--duration-base) var(--ease-out);
+}
+
+@media (max-width: 64rem) {
+  .coins {
+    min-width: 34rem;
+  }
+
+  .coins__volume,
+  .coins__cap {
+    display: none;
+  }
+}
+
+@media (max-width: 44rem) {
+  .coins__trend {
+    display: none;
+  }
+}

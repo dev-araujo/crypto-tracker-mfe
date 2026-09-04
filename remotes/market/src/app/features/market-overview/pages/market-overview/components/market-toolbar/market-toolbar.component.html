@@ -1,0 +1,23 @@
+<div class="toolbar">
+  <crypto-segmented-control
+    [options]="periodOptions"
+    [value]="period()"
+    (valueChange)="onPeriodChange($event)"
+    groupLabel="Período de variação"
+  />
+
+  <div class="toolbar__status">
+    <span class="toolbar__updated numeric" aria-live="polite">{{ updatedLabel() }}</span>
+
+    <button
+      type="button"
+      class="toolbar__refresh"
+      [class.toolbar__refresh--busy]="isRefreshing()"
+      [disabled]="isRefreshing()"
+      aria-label="Atualizar cotações agora"
+      (click)="refreshRequested.emit()"
+    >
+      <crypto-icon name="refresh" [size]="15" />
+    </button>
+  </div>
+</div>

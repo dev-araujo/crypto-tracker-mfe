@@ -1,0 +1,57 @@
+<header class="masthead">
+  <p class="masthead__eyebrow">Mercado global</p>
+  <h1 class="masthead__title">
+    O mercado cripto em uma <em class="masthead__accent">única leitura</em>
+  </h1>
+  <p class="masthead__subtitle">
+    Cotações, variação e liquidez dos principais ativos, atualizadas continuamente e convertidas
+    para a sua moeda.
+  </p>
+</header>
+
+<market-stats [stats]="stats()" [currencyCode]="currencyCode()" />
+
+<section class="results" aria-labelledby="results-title">
+  <div class="results__heading">
+    <h2 id="results-title" class="results__title">
+      {{ filters().search.length > 0 ? 'Resultados da busca' : 'Ranking por capitalização' }}
+    </h2>
+
+    <p class="results__summary numeric">{{ resultSummary() }}</p>
+
+    @if (filters().search.length > 0) {
+      <button type="button" class="results__chip" (click)="onSearchCleared()">
+        “{{ filters().search }}”
+        <crypto-icon name="close" [size]="13" />
+      </button>
+    }
+  </div>
+
+  <market-toolbar
+    [period]="filters().timePeriod"
+    [status]="status()"
+    [updatedAt]="updatedAt()"
+    (periodChange)="onPeriodChange($event)"
+    (refreshRequested)="onRefresh()"
+  />
+
+  <market-coin-table
+    [coins]="coins()"
+    [currencyCode]="currencyCode()"
+    [status]="status()"
+    [orderBy]="filters().orderBy"
+    [orderDirection]="filters().orderDirection"
+    [periodLabel]="periodLabel()"
+    [watchedUuids]="watchedUuids()"
+    [searchTerm]="filters().search"
+    [offset]="filters().offset"
+    [limit]="filters().limit"
+    [total]="totalResults()"
+    (sortChange)="onSortChange($event)"
+    (watchToggled)="onWatchToggled($event)"
+    (offsetChange)="onOffsetChange($event)"
+    (limitChange)="onLimitChange($event)"
+    (searchCleared)="onSearchCleared()"
+    (retried)="onRefresh()"
+  />
+</section>

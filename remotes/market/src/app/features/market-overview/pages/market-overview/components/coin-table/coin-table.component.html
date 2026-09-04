@@ -1,0 +1,150 @@
+<section class="table-card" aria-label="Ranking de criptomoedas">
+  @if (hasFailed()) {
+    <crypto-empty-state
+      icon="alert"
+      tone="error"
+      title="Não foi possível carregar o mercado"
+      description="A API de cotações não respondeu como esperado. Você pode tentar novamente."
+    >
+      <button type="button" class="table-card__action" (click)="retried.emit()">
+        <crypto-icon name="refresh" [size]="15" />
+        Tentar novamente
+      </button>
+    </crypto-empty-state>
+  } @else if (isEmpty()) {
+    <crypto-empty-state
+      icon="search"
+      title="Nenhuma criptomoeda encontrada"
+      [description]="
+        searchTerm().length > 0
+          ? 'Nada corresponde a “' + searchTerm() + '”. Ajuste a busca e tente de novo.'
+          : 'Nenhum ativo disponível para os filtros atuais.'
+      "
+    >
+      @if (searchTerm().length > 0) {
+        <button type="button" class="table-card__action" (click)="searchCleared.emit()">
+          Limpar busca
+        </button>
+      }
+    </crypto-empty-state>
+  } @else {
+    <div class="table-card__scroll">
+      <table class="coins">
+        <caption class="visually-hidden">
+          Criptomoedas ordenadas por
+          {{
+            orderBy()
+          }}, variação no período de
+          {{
+            periodLabel()
+          }}
+        </caption>
+
+        <thead>
+          <tr>
+            <th scope="col" class="coins__rank">#</th>
+            @for (column of columns; track column.label) {
+              <th
+                scope="col"
+                [class]="'coins__' + column.modifier"
+                [attr.aria-sort]="ariaSort(column.orderBy)"
+              >
+                @if (column.orderBy; as sortKey) {
+                  <button type="button" class="coins__sort" (click)="sortChange.emit(sortKey)">
+                    {{
+                      column.label === 'Variação'
+                        ? column.label + ' ' + periodLabel()
+                        : column.label
+                    }}
+                    <crypto-icon [name]="sortIcon(sortKey)" [size]="13" />
+                  </button>
+                } @else {
+                  <span>{{ column.label }}</span>
+                }
+              </th>
+            }
+            <th scope="col" class="coins__watch">
+              <span class="visually-hidden">Watchlist</span>
+            </th>
+          </tr>
+        </thead>
+
+        <tbody [class.coins--stale]="status() === 'refreshing'">
+          @if (isLoading()) {
+            @for (row of skeletonRows(); track $index) {
+              <tr class="coins__row coins__row--skeleton">
+                <td class="coins__rank"><crypto-skeleton width="1.5rem" /></td>
+                <td class="coins__identity">
+                  <div class="coins__identity-skeleton">
+                    <crypto-skeleton width="2.25rem" height="2.25rem" [circle]="true" />
+                    <crypto-skeleton width="7rem" />
+                  </div>
+                </td>
+                <td class="coins__price"><crypto-skeleton width="5rem" /></td>
+                <td class="coins__change"><crypto-skeleton width="4rem" /></td>
+                <td class="coins__volume"><crypto-skeleton width="5rem" /></td>
+                <td class="coins__cap"><crypto-skeleton width="5rem" /></td>
+                <td class="coins__trend"><crypto-skeleton width="6rem" height="2rem" /></td>
+                <td class="coins__watch"><crypto-skeleton width="1.5rem" /></td>
+              </tr>
+            }
+          } @else {
+            @for (coin of coins(); track coin.uuid) {
+              <tr class="coins__row">
+                <td class="coins__rank numeric">{{ coin.rank }}</td>
+
+                <td class="coins__identity">
+                  <a
+                    class="coins__link"
+                    [routerLink]="['/coins', coin.uuid]"
+                    [attr.aria-label]="'Ver análise de ' + coin.name"
+                  >
+                    <crypto-coin-identity
+                      [name]="coin.name"
+                      [symbol]="coin.symbol"
+                      [iconUrl]="coin.iconUrl"
+                    />
+                    <crypto-icon class="coins__link-icon" name="chart" [size]="14" />
+                  </a>
+                </td>
+
+                <td class="coins__price numeric">{{ coin.price | price: currencyCode() }}</td>
+
+                <td class="coins__change">
+                  <crypto-delta-badge [value]="coin.changePercent" [period]="periodLabel()" />
+                </td>
+
+                <td class="coins__volume numeric">{{ coin.volume24h | compactNumber }}</td>
+
+                <td class="coins__cap numeric">
+                  {{ coin.marketCap | price: currencyCode() : true }}
+                </td>
+
+                <td class="coins__trend">
+                  <crypto-sparkline [points]="coin.sparkline" [trend]="coin.trend" />
+                </td>
+
+                <td class="coins__watch">
+                  <crypto-watch-toggle
+                    [active]="isWatched(coin.uuid)"
+                    [coinName]="coin.name"
+                    (toggled)="watchToggled.emit(coin)"
+                  />
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <crypto-paginator
+      [offset]="offset()"
+      [limit]="limit()"
+      [total]="total()"
+      [pageSizes]="pageSizes"
+      (offsetChange)="offsetChange.emit($event)"
+      (limitChange)="limitChange.emit($event)"
+    />
+  }
+</section>

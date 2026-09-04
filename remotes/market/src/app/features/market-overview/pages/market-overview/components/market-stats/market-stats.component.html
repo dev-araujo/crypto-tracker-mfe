@@ -1,0 +1,16 @@
+<dl class="stats">
+  @if (tiles().length > 0) {
+    @for (tile of tiles(); track tile.label) {
+      <div class="stats__item">
+        <crypto-stat-tile [label]="tile.label" [value]="tile.value" [hint]="tile.hint" />
+      </div>
+    }
+  } @else {
+    @for (placeholder of placeholders; track $index) {
+      <div class="stats__item">
+        <crypto-skeleton width="4rem" height="0.7rem" />
+        <crypto-skeleton width="7rem" height="1.4rem" />
+      </div>
+    }
+  }
+</dl>
