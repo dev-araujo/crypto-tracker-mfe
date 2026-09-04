@@ -1,0 +1,36 @@
+<nav class="paginator" aria-label="Paginação de resultados">
+  <p class="paginator__range numeric" aria-live="polite">{{ rangeLabel() }}</p>
+
+  <div class="paginator__controls">
+    <label class="paginator__size">
+      <span class="visually-hidden">Itens por página</span>
+      <select [value]="limit()" (change)="onPageSizeChange($event)">
+        @for (size of pageSizes(); track size) {
+          <option [value]="size" [selected]="size === limit()">{{ size }} por página</option>
+        }
+      </select>
+    </label>
+
+    <button
+      type="button"
+      class="paginator__button"
+      aria-label="Página anterior"
+      [disabled]="isFirstPage()"
+      (click)="goToPrevious()"
+    >
+      <crypto-icon name="arrow-left" [size]="16" />
+    </button>
+
+    <span class="paginator__page numeric">{{ currentPage() }} / {{ totalPages() }}</span>
+
+    <button
+      type="button"
+      class="paginator__button"
+      aria-label="Próxima página"
+      [disabled]="isLastPage()"
+      (click)="goToNext()"
+    >
+      <crypto-icon name="arrow-right" [size]="16" />
+    </button>
+  </div>
+</nav>

@@ -1,0 +1,79 @@
+@if (hasData()) {
+  <svg
+    #surface
+    class="chart__surface"
+    [attr.viewBox]="viewBox()"
+    [style.height.px]="height()"
+    role="img"
+    tabindex="0"
+    [attr.aria-label]="summary()"
+    (pointermove)="onPointerMove($event)"
+    (pointerleave)="onPointerLeave()"
+    (blur)="onPointerLeave()"
+    (keydown)="onKeydown($event)"
+  >
+    <defs>
+      <linearGradient [attr.id]="gradientId" x1="0" x2="0" y1="0" y2="1">
+        <stop offset="0%" class="chart__gradient-start" />
+        <stop offset="100%" class="chart__gradient-end" />
+      </linearGradient>
+    </defs>
+
+    @for (tick of valueTicks(); track tick.value) {
+      <line
+        class="chart__grid"
+        [attr.x1]="chartLeft()"
+        [attr.x2]="chartRight()"
+        [attr.y1]="tick.y"
+        [attr.y2]="tick.y"
+      />
+      <text
+        class="chart__axis-label"
+        [attr.x]="chartLeft() - 12"
+        [attr.y]="tick.y + 4"
+        text-anchor="end"
+      >
+        {{ tick.label }}
+      </text>
+    }
+
+    <path class="chart__area" [attr.d]="areaPath()" [attr.fill]="'url(#' + gradientId + ')'" />
+    <path class="chart__line" [attr.d]="linePath()" />
+
+    @for (tick of timeTicks(); track tick.x) {
+      <text
+        class="chart__axis-label"
+        [attr.x]="tick.x"
+        [attr.y]="baseline() + 20"
+        [attr.text-anchor]="tick.anchor"
+      >
+        {{ tick.label }}
+      </text>
+    }
+
+    @if (activePoint(); as active) {
+      <line
+        class="chart__crosshair"
+        [attr.x1]="active.x"
+        [attr.x2]="active.x"
+        [attr.y1]="chartTop"
+        [attr.y2]="baseline()"
+      />
+      <circle class="chart__marker" [attr.cx]="active.x" [attr.cy]="active.y" r="4.5" />
+    }
+  </svg>
+
+  @if (tooltip(); as tooltip) {
+    <div
+      class="chart__tooltip"
+      [class.chart__tooltip--end]="tooltip.alignEnd"
+      [style.left.%]="(tooltip.x / width()) * 100"
+      role="status"
+    >
+      <span class="chart__tooltip-price numeric">{{ tooltip.price }}</span>
+      <span class="chart__tooltip-moment">{{ tooltip.moment }}</span>
+    </div>
+  }
+} @else {
+  <p class="chart__empty">Nenhum dado de histórico disponível para este período.</p>
+}

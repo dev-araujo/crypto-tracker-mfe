@@ -1,0 +1,22 @@
+<form class="search" role="search" (submit)="onSubmit($event)">
+  <crypto-icon class="search__icon" name="search" [size]="16" />
+
+  <input
+    #control
+    class="search__input"
+    type="search"
+    autocomplete="off"
+    [attr.aria-label]="fieldLabel()"
+    [placeholder]="placeholder()"
+    [value]="value()"
+    (input)="onInput($event)"
+  />
+
+  @if (value().length > 0) {
+    <button type="button" class="search__clear" aria-label="Limpar busca" (click)="clear()">
+      <crypto-icon name="close" [size]="14" />
+    </button>
+  } @else {
+    <kbd class="search__shortcut" aria-hidden="true">{{ shortcutHint() }}</kbd>
+  }
+</form>

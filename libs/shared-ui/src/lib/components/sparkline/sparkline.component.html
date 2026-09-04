@@ -1,0 +1,8 @@
+@if (hasData()) {
+  <svg [attr.viewBox]="viewBox" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+    <path class="sparkline__area" [attr.d]="areaPath()" />
+    <path class="sparkline__line" [attr.d]="linePath()" vector-effect="non-scaling-stroke" />
+  </svg>
+} @else {
+  <span class="sparkline__empty" aria-hidden="true"></span>
+}

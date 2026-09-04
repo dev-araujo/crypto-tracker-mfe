@@ -1,0 +1,16 @@
+<div class="toasts" role="region" aria-label="Notificações" aria-live="polite">
+  @for (notification of notifications(); track notification.id) {
+    <article class="toast toast--{{ notification.tone }}">
+      <crypto-icon [name]="iconFor(notification.tone)" [size]="16" />
+      <p class="toast__message">{{ notification.message }}</p>
+      <button
+        type="button"
+        class="toast__dismiss"
+        aria-label="Fechar notificação"
+        (click)="dismiss(notification.id)"
+      >
+        <crypto-icon name="close" [size]="14" />
+      </button>
+    </article>
+  }
+</div>

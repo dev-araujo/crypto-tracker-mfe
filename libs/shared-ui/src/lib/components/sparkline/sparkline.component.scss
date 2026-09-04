@@ -1,0 +1,41 @@
+:host {
+  display: block;
+  width: 100%;
+  height: 2.25rem;
+  --sparkline-color: var(--color-neutral);
+}
+
+:host(.sparkline--up) {
+  --sparkline-color: var(--color-positive);
+}
+
+:host(.sparkline--down) {
+  --sparkline-color: var(--color-negative);
+}
+
+svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.sparkline__line {
+  fill: none;
+  stroke: var(--sparkline-color);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.sparkline__area {
+  fill: var(--sparkline-color);
+  opacity: 0.08;
+  stroke: none;
+}
+
+.sparkline__empty {
+  display: block;
+  height: 1px;
+  margin-top: 1.125rem;
+  background: var(--color-border);
+}

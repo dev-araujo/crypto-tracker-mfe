@@ -1,0 +1,13 @@
+<span class="state__icon">
+  <crypto-icon [name]="icon()" [size]="22" />
+</span>
+
+<h3 class="state__title">{{ title() }}</h3>
+
+@if (description().length > 0) {
+  <p class="state__description">{{ description() }}</p>
+}
+
+<div class="state__actions">
+  <ng-content />
+</div>

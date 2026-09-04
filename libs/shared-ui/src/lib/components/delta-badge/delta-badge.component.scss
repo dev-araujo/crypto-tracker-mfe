@@ -1,0 +1,34 @@
+:host {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  border-radius: var(--radius-pill);
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--weight-medium);
+  white-space: nowrap;
+}
+
+:host(.delta--sm) {
+  padding: 0.125rem var(--space-2);
+  font-size: var(--text-xs);
+}
+
+:host(.delta--md) {
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--text-base);
+}
+
+:host(.delta--up) {
+  color: var(--color-positive);
+  background: var(--color-positive-soft);
+}
+
+:host(.delta--down) {
+  color: var(--color-negative);
+  background: var(--color-negative-soft);
+}
+
+:host(.delta--flat) {
+  color: var(--color-neutral);
+  background: var(--color-neutral-soft);
+}
