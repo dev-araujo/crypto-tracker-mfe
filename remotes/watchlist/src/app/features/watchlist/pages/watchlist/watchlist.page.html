@@ -45,7 +45,7 @@
       groupLabel="Período de variação"
     />
 
-    <button type="button" class="toolbar__clear" (click)="onClearAll()">
+    <button type="button" class="toolbar__clear" aria-haspopup="dialog" (click)="onClearAll()">
       <crypto-icon name="trash" [size]="14" />
       Limpar watchlist
     </button>
@@ -72,3 +72,14 @@
     </ul>
   }
 }
+
+<crypto-confirm-dialog
+  tone="danger"
+  title="Limpar a watchlist?"
+  confirmLabel="Limpar watchlist"
+  cancelLabel="Manter"
+  [open]="isClearDialogOpen()"
+  [description]="clearDialogDescription()"
+  (confirmed)="onClearConfirmed()"
+  (dismissed)="onClearDismissed()"
+/>

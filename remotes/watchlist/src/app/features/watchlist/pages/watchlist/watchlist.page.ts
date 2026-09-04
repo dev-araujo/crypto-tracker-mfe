@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
   Coin,
@@ -7,6 +7,7 @@ import {
   findTimePeriodByCode,
 } from '@crypto/shared-data-access';
 import {
+  ConfirmDialogComponent,
   EmptyStateComponent,
   IconComponent,
   SegmentOption,
@@ -22,6 +23,7 @@ import { WatchlistSummaryComponent } from './components/watchlist-summary/watchl
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     RouterLink,
+    ConfirmDialogComponent,
     EmptyStateComponent,
     IconComponent,
     SegmentedControlComponent,
@@ -58,6 +60,15 @@ export class WatchlistPage {
     () => findTimePeriodByCode(this.selectedPeriod()).label,
   );
   protected readonly skeletonCards = Array.from({ length: 3 });
+  protected readonly isClearDialogOpen = signal(false);
+
+  protected readonly clearDialogDescription = computed(() => {
+    const total = this.service.trackedCount();
+
+    return total === 1
+      ? 'O ativo que você acompanha será removido deste navegador. Não é possível desfazer.'
+      : `Os ${total} ativos que você acompanha serão removidos deste navegador. Não é possível desfazer.`;
+  });
 
   protected onPeriodChange(period: TimePeriodCode): void {
     this.service.selectPeriod(period);
@@ -68,7 +79,16 @@ export class WatchlistPage {
   }
 
   protected onClearAll(): void {
+    this.isClearDialogOpen.set(true);
+  }
+
+  protected onClearConfirmed(): void {
+    this.isClearDialogOpen.set(false);
     this.service.clearAll();
+  }
+
+  protected onClearDismissed(): void {
+    this.isClearDialogOpen.set(false);
   }
 
   protected onRetry(): void {

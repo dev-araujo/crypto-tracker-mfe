@@ -49,6 +49,7 @@ export class WatchlistCoinsService {
   readonly status = this._status.asReadonly();
   readonly timePeriod = this._timePeriod.asReadonly();
   readonly currencyCode = this.preferences.currencyCode;
+  readonly trackedCount = this.watchlist.count;
 
   readonly isLoading = computed(() => this._status() === 'loading');
   readonly hasFailed = computed(() => this._status() === 'error');
