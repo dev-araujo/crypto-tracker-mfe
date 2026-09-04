@@ -1,35 +1,50 @@
-<img src="https://img.shields.io/badge/Angular_22-DD0031?style=for-the-badge&logo=angular&logoColor=white" alt="Angular" /> <img src="https://img.shields.io/badge/Native_Federation-4B32C3?style=for-the-badge" alt="Native Federation" /> <img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" /> <img src="https://img.shields.io/badge/RxJS-B7178C?style=for-the-badge&logo=reactivex&logoColor=white" alt="RxJS" /> <img src="https://img.shields.io/badge/Vitest-6E9F18?style=for-the-badge&logo=vitest&logoColor=white" alt="Vitest" />
+<img src="https://img.shields.io/static/v1?label=license&message=MIT&color=5965E0&labelColor=121214" alt="License"> <img src="https://img.shields.io/badge/Angular_22-DD0031?style=for-the-badge&logo=angular&logoColor=white" alt="Angular" /> <img src="https://img.shields.io/badge/Native_Federation-4B32C3?style=for-the-badge" alt="Native Federation" /> <img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" /> <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker" /> <img src="https://img.shields.io/badge/rxjs-%23B7178C.svg?style=for-the-badge&logo=rxjs&logoColor=white" alt="RxJS" /> <img src="https://img.shields.io/badge/Vitest-6E9F18?style=for-the-badge&logo=vitest&logoColor=white" alt="Vitest" />
 
-# Cripto Angular · Microfrontends
+# CryptoAngular · Microfrontends
 
-Reconstrução do **crypto-tracker-angular** como um workspace de **microfrontends** em Angular 22:
-um shell (host) orquestra três remotes carregados em runtime via **Native Federation**, sobre um
-design system próprio, com estado compartilhado por signals e zero dependências de UI de terceiros.
+O **CryptoAngular MFE** é a reconstrução do [crypto-angular](https://github.com/dev-araujo/crypto-angular) como uma arquitetura de **microfrontends**: um shell orquestra três aplicações independentes, carregadas em runtime via **Native Federation**, consumindo a API pública da [Coinranking](https://coinranking.com/) para exibir cotações, gráficos e uma watchlist pessoal.
 
 ![Mercado](./docs/market.png)
 
 ---
 
-## Arquitetura
+## Stack 🚀
+
+**Frontend**
+
+- **Angular (v22)** — standalone, signals, zoneless
+- **Native Federation** — composição dos microfrontends em runtime
+- **TypeScript (v6)**
+- **RxJS**
+- **SCSS** com design tokens próprios
+- **Vitest**
+
+**API (Externa)**
+
+- **Coinranking API**
+
+> Sem bibliotecas de UI de terceiros: o gráfico, a tabela e todos os componentes são próprios.
+> O bundle inicial ficou em **~38 kB comprimido**.
+
+## Arquitetura 🧩
 
 ```text
 crypto-tracker-mfe/
-├── shell/                       # Host: layout, tema, roteamento, busca e moeda globais
+├── shell/                       # Host: layout, tema, moeda, busca e roteamento   (:4200)
 ├── remotes/
-│   ├── market/                  # Ranking, busca, ordenação e paginação do mercado   (:4201)
-│   ├── analytics/               # Detalhe do ativo, gráfico interativo e indicadores  (:4202)
-│   └── watchlist/               # Ativos acompanhados pelo usuário                    (:4203)
+│   ├── market/                  # Ranking, busca, ordenação e paginação          (:4201)
+│   ├── analytics/               # Detalhe do ativo, gráfico e indicadores         (:4202)
+│   └── watchlist/               # Ativos acompanhados pelo usuário                (:4203)
 ├── libs/
-│   ├── shared-ui/               # Design tokens + componentes/pipes de apresentação
-│   ├── shared-state/            # Stores de estado compartilhado entre remotes (signals)
-│   ├── shared-data-access/      # Models API/domínio, mappers puros e cliente HTTP
-│   └── shared-utils/            # Formatadores puros e acesso a storage
-├── scripts/                     # Geração de environments e do federation manifest
-└── deploy/                      # Configurações de deploy (uma por microfrontend)
+│   ├── shared-ui/               # Design tokens + componentes e pipes
+│   ├── shared-state/            # Estado compartilhado entre remotes (signals)
+│   ├── shared-data-access/      # Models, mappers puros, cliente HTTP e cache
+│   └── shared-utils/            # Formatadores e acesso a storage
+├── scripts/                     # Geração dos environments e do federation manifest
+└── deploy/                      # Uma configuração de deploy por microfrontend
 ```
 
-O shell resolve cada rota por federação e **degrada com elegância**: se um remote estiver fora do ar,
-apenas aquela área exibe um estado de indisponibilidade — o resto da aplicação continua navegável.
+O repositório é um monorepo, mas a **independência está no deploy**: cada aplicação tem seu próprio build, sua própria URL e seu próprio projeto na Vercel. O shell resolve os remotes por um manifest lido em runtime — trocar o ambiente de um microfrontend não exige rebuild dos outros.
 
 ```typescript
 export const routes: Routes = [
@@ -40,6 +55,8 @@ export const routes: Routes = [
 ];
 ```
 
+Se um remote estiver fora do ar, **apenas aquela área** exibe um estado de indisponibilidade — o resto da aplicação continua navegável.
+
 ### Fluxo de dados
 
 ```text
@@ -49,81 +66,123 @@ export const routes: Routes = [
         └──────── mapper (função pura) ────────────┘
 ```
 
-- `CoinApiService` (em `shared-data-access`) só faz HTTP; recebe a config por injeção.
-- Cada remote tem seu **service de domínio** com estado em signals (`MarketService`,
-  `CoinAnalyticsService`, `WatchlistCoinsService`) — nenhum componente conhece o modelo da API.
-- Os **mappers** convertem API ↔ domínio (strings → números, timestamps → `Date`, tendência).
+- `CoinApiService` só faz HTTP e recebe a configuração por injeção.
+- Cada remote tem seu **service de domínio** com estado em signals — nenhum componente conhece o modelo cru da API.
+- Os **mappers** são funções puras que convertem API ↔ domínio.
 
-### Isolamento e compartilhamento
+### O que é isolado e o que é compartilhado
 
-| Assunto              | Decisão                                                                                                                       |
-| -------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| Config da API        | Provida nas rotas de cada remote (`provideCryptoApi`) — cada MFE carrega a própria credencial                                 |
-| Estado de domínio    | Escopado às rotas do remote, destruído ao sair                                                                                |
-| Estado compartilhado | `PreferencesStore` (moeda/tema), `WatchlistStore`, `MarketSearchStore`, `NotificationStore` — singletons via `sharedMappings` |
-| Estilos              | Tokens CSS globais no shell; componentes usam apenas `var(--token)`                                                           |
-| Dependências         | `shareAll` com `singleton: true` — uma única instância de Angular/RxJS em runtime                                             |
+| Assunto              | Decisão                                                                                       |
+| -------------------- | --------------------------------------------------------------------------------------------- |
+| Config da API        | Provida nas rotas de cada remote (`provideCryptoApi`) — cada MFE carrega a própria credencial |
+| Estado de domínio    | Escopado às rotas do remote, destruído ao sair                                                |
+| Estado compartilhado | Moeda, tema, watchlist, busca e notificações — instância única via `sharedMappings`           |
+| Estilos              | Tokens CSS globais; componentes usam apenas `var(--token)`                                    |
+| Dependências         | `shareAll` com `singleton: true` — uma única instância de Angular e RxJS em runtime           |
 
----
+### Consumo da API
 
-## Experiência e design
+A quota da Coinranking é finita, então os dados são tratados com cuidado:
 
-Direção **light editorial minimalista**: fundo de papel quente, tipografia serifada (Instrument
-Serif) nos títulos, Inter com algarismos tabulares nos números e um único verde de acento.
-Tema escuro completo pelo mesmo conjunto de tokens.
+- Revalidação automática a cada **120s**, configurável por `DATA_REVALIDATE_INTERVAL_MS`.
+- O ciclo **pausa enquanto a aba está oculta** e dispara uma única atualização quando ela volta.
+- Cache HTTP em memória com TTL de 60s e deduplicação de requisições simultâneas: trocar período, paginar ou revisitar um ativo dentro da janela não gera nova chamada.
+- Os remotes são pré-carregados no hover dos links do header.
 
-![Análise](./docs/analytics.png)
+## Interface 🎨
 
-O que mudou em relação à versão anterior:
+Direção **light editorial minimalista**: fundo de papel quente, tipografia serifada nos títulos, algarismos tabulares nos números e um único verde de acento. O tema escuro vem do mesmo conjunto de tokens.
 
-- **Estado na URL**: busca, ordenação, período, página e tamanho de página são compartilháveis.
-- **Gráfico próprio em SVG** com crosshair, tooltip e navegação por teclado — sem Chart.js.
-- **Atualização contínua**: revalidação a cada 120s (configurável por `DATA_REVALIDATE_INTERVAL_MS`),
-  pausada enquanto a aba está oculta, com indicador "atualizado há…" e refresh manual.
-- **Watchlist** persistida no navegador, sincronizada entre os três microfrontends.
-- **Busca global** no header (atalho `/`), com debounce e sincronização com a rota do mercado.
-- **Moeda e tema** globais e persistidos (BRL, USD, EUR, GBP).
-- **Estados explícitos** de carregamento, vazio e erro, com toasts para falhas de rede.
-- **Acessibilidade**: navegação por teclado, `aria-sort` nas colunas, skip link, foco visível,
-  respeito a `prefers-reduced-motion`.
-- **Sem bibliotecas de UI**: bundle inicial de ~38 kB comprimido (antes: PrimeNG + Chart.js).
-
-![Watchlist](./docs/watchlist.png)
-
-O mesmo conjunto de tokens serve o tema escuro:
+|                                  |                                    |
+| -------------------------------- | ---------------------------------- |
+| ![Análise](./docs/analytics.png) | ![Watchlist](./docs/watchlist.png) |
 
 ![Mercado no tema escuro](./docs/market-dark.png)
 
----
+Alguns pontos da experiência:
 
-## Rodando localmente
+- **Estado na URL**: busca, ordenação, período e paginação são compartilháveis por link.
+- **Gráfico próprio em SVG**, com crosshair, tooltip e navegação por teclado.
+- **Watchlist** persistida no navegador e sincronizada entre os três microfrontends.
+- **Busca global** no header com atalho `/`.
+- **Acessibilidade**: skip link, `aria-sort` nas colunas, foco visível, diálogos com foco preso e respeito a `prefers-reduced-motion`.
 
-Pré-requisitos: Node 22+ e uma chave da [Coinranking](https://developers.coinranking.com/).
+## Configuração de Ambiente 🔐
 
-```bash
-cp .env.example .env          # informe COINRANKING_API_KEY
-npm install
-npm start                     # shell :4200 · market :4201 · analytics :4202 · watchlist :4203
-```
+Antes de rodar o projeto, é necessário configurar o seu token da API da Coinranking:
 
-`npm start` gera os arquivos de environment e o `federation.manifest.json` antes de subir os quatro
-servidores. Acesse **http://localhost:4200**.
+1. Crie uma cópia do arquivo `.env.example` e renomeie para `.env`.
+2. Abra o arquivo `.env` e insira sua chave da API:
 
-Para trabalhar em um microfrontend isolado (ele sobe sozinho, com seu próprio bootstrap):
+   ```env
+   COINRANKING_API_KEY=seu_token_real_aqui
+   ```
+
+   _(O arquivo `.env` não é enviado ao GitHub por segurança)._
+
+Os arquivos de environment de cada remote são **gerados** a partir do `.env` e também ficam fora do controle de versão.
+
+> A chave é embutida no bundle do cliente, como na versão original. Para uso público, coloque um proxy no backend e aponte `COINRANKING_BASE_URL` para ele.
+
+## Rodando Localmente ⚡️
+
+Existem duas maneiras de rodar o projeto: **manualmente** ou com **Docker**.
+
+### Manualmente ⚒️
+
+#### 📋 Pré-requisitos
+
+Node 22 ou superior.
+
+1.  Clone o repositório:
+
+    ```bash
+    git clone https://github.com/dev-araujo/crypto-tracker-mfe.git
+    ```
+
+2.  Instale as dependências:
+
+    ```bash
+    npm install
+    ```
+
+3.  Execute os servidores de desenvolvimento:
+
+    ```bash
+    npm start
+    ```
+
+    _Obs: O comando `npm start` gera os environments e o manifest de federação a partir do seu `.env` antes de subir as quatro aplicações._
+
+⭐ A aplicação estará disponível em `http://localhost:4200`.
+
+Para trabalhar em um microfrontend isolado, cada um sobe sozinho com o próprio bootstrap:
 
 ```bash
 npm run start:market      # ou start:analytics / start:watchlist / start:shell
 ```
 
-### Docker
+### Com Docker 🐋
 
-```bash
-docker compose up --build
-```
+#### 📋 Pré-requisitos
 
----
+Certifique-se de que você tem o [Docker](https://www.docker.com/get-started) e o [Docker Compose](https://docs.docker.com/compose/install/) instalados.
 
-## Scripts
+1.  Clone o repositório:
+
+    ```bash
+    git clone https://github.com/dev-araujo/crypto-tracker-mfe.git
+    ```
+
+2.  Execute o Docker Compose para construir as imagens e iniciar os contêineres.
+
+    ```bash
+    docker compose up --build
+    ```
+
+⭐ A aplicação estará disponível em `http://localhost:4200`.
+
+## Scripts 📜
 
 | Script                      | O que faz                                                        |
 | --------------------------- | ---------------------------------------------------------------- |
@@ -135,13 +194,11 @@ docker compose up --build
 | `npm run generate:env`      | Regenera os environments a partir do `.env`                      |
 | `npm run generate:manifest` | Regenera o manifest de federação a partir das URLs dos remotes   |
 | `npm run format`            | Prettier                                                         |
+| `npm run clean`             | Remove `dist` e o cache do Angular                               |
 
----
+## Deploy 🚢
 
-## Deploy
-
-Cada microfrontend é **deployado de forma independente**. Na Vercel, crie um projeto por app usando
-a configuração correspondente:
+Cada microfrontend é publicado de forma independente. Na Vercel, crie um projeto por app usando a configuração correspondente:
 
 ```bash
 vercel deploy --prod --local-config=deploy/vercel.market.json
@@ -150,7 +207,7 @@ vercel deploy --prod --local-config=deploy/vercel.watchlist.json
 vercel deploy --prod --local-config=deploy/vercel.shell.json
 ```
 
-Antes de publicar o shell, aponte o manifest para as URLs públicas dos remotes:
+Publique os três remotes primeiro e informe as URLs públicas no `.env` antes de publicar o shell:
 
 ```env
 MFE_MARKET_URL=https://market.seu-dominio.com
@@ -158,19 +215,13 @@ MFE_ANALYTICS_URL=https://analytics.seu-dominio.com
 MFE_WATCHLIST_URL=https://watchlist.seu-dominio.com
 ```
 
-O `prebuild` regenera `shell/public/federation.manifest.json` com esses valores — trocar de ambiente
-não exige rebuild dos remotes.
+O `prebuild` regenera o `federation.manifest.json` com esses valores.
 
-> A chave da Coinranking é embutida no bundle do cliente (como na versão original). Para uso público,
-> coloque um proxy no backend e aponte `COINRANKING_BASE_URL` para ele.
-
----
-
-## Troubleshooting
+## Troubleshooting 🩺
 
 **Erros `404` de chunk ou `ngDevMode is not defined` no navegador durante o desenvolvimento.**
-Acontece quando um build de produção (`npm run build`) roda com os dev servers no ar: os dois
-compartilham o cache de artefatos da federação em `.angular/cache`. Pare os servidores e reinicie:
+
+Acontece quando um build de produção roda com os dev servers no ar: os dois compartilham o cache de artefatos da federação em `.angular/cache`. Pare os servidores e reinicie:
 
 ```bash
 npm run clean && npm start
@@ -178,20 +229,8 @@ npm run clean && npm start
 
 ---
 
-## Convenções de código
+#### Autor 👷
 
-Seguem a skill `front-end` do repositório:
+<img src="https://avatars.githubusercontent.com/u/97068163?v=4" width=120 />
 
-- Estrutura por remote/feature: `pages/`, `components/`, `services/`, `mappers/`, `models/`, `constants/`.
-- Serviços em duas camadas: API (HTTP puro) e domínio (estado + regras).
-- Estado com `signal`/`computed`; assinaturas encerradas com `takeUntilDestroyed`.
-- `inject()` em vez de injeção por construtor; componentes `OnPush` e standalone.
-- Código em inglês, sem comentários, autoexplicativo; textos de interface em português.
-- Estilos apenas com design tokens — nada de cores ou espaçamentos hardcoded.
-
----
-
-## Stack
-
-Angular 22 (standalone, signals, zoneless) · Native Federation · TypeScript 6 · RxJS 7 · SCSS com
-design tokens · Vitest · API pública da Coinranking.
+[Adriano P Araujo](https://www.linkedin.com/in/araujocode/)
