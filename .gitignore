@@ -50,3 +50,4 @@ remotes/*/src/environments/environment.development.ts
 
 # Vercel
 .vercel
+.env*
